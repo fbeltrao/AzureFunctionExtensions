@@ -1,0 +1,23 @@
+﻿{
+  "bindings": [
+    {
+      "name": "req",
+      "type": "httpTrigger",
+      "direction": "in",
+      "authLevel": "function"
+    },
+    {
+      "type": "redis",
+      "connectionString": "10.211.55.2:6379",
+      "direction": "out",
+      "name": "redisItem",
+      "key":  "JSKey"
+    },
+    {
+      "name": "$return",
+      "type": "http",
+      "direction": "out"
+    }
+  ],
+  "disabled": false
+}
