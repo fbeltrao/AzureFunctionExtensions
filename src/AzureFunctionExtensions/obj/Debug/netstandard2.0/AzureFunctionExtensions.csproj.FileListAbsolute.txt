@@ -1,9 +1,0 @@
-Z:\dev\github.com\fbeltrao\AzureFunctionExtensions\src\AzureFunctionExtensions\bin\Debug\netstandard2.0\AzureFunctionExtensions.deps.json
-Z:\dev\github.com\fbeltrao\AzureFunctionExtensions\src\AzureFunctionExtensions\bin\Debug\netstandard2.0\AzureFunctionExtensions.dll
-Z:\dev\github.com\fbeltrao\AzureFunctionExtensions\src\AzureFunctionExtensions\bin\Debug\netstandard2.0\AzureFunctionExtensions.pdb
-Z:\dev\github.com\fbeltrao\AzureFunctionExtensions\src\AzureFunctionExtensions\obj\Debug\netstandard2.0\AzureFunctionExtensions.csprojResolveAssemblyReference.cache
-Z:\dev\github.com\fbeltrao\AzureFunctionExtensions\src\AzureFunctionExtensions\obj\Debug\netstandard2.0\AzureFunctionExtensions.csproj.CoreCompileInputs.cache
-Z:\dev\github.com\fbeltrao\AzureFunctionExtensions\src\AzureFunctionExtensions\obj\Debug\netstandard2.0\AzureFunctionExtensions.AssemblyInfoInputs.cache
-Z:\dev\github.com\fbeltrao\AzureFunctionExtensions\src\AzureFunctionExtensions\obj\Debug\netstandard2.0\AzureFunctionExtensions.AssemblyInfo.cs
-Z:\dev\github.com\fbeltrao\AzureFunctionExtensions\src\AzureFunctionExtensions\obj\Debug\netstandard2.0\AzureFunctionExtensions.dll
-Z:\dev\github.com\fbeltrao\AzureFunctionExtensions\src\AzureFunctionExtensions\obj\Debug\netstandard2.0\AzureFunctionExtensions.pdb
