@@ -327,3 +327,4 @@ public static async Task CallWebsite(
 |HttpCall| Allows a function to make an HTTP call easily, handy when you need to call a Webhook or a callback web site to notify a change.|
 
 Have a suggestion? Create an issue and I will take a look.
+I am looking into adding custom event grid topic messages as output.
