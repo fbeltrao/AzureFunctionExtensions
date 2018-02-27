@@ -2,7 +2,7 @@
 This repository contains a few Azure Function extensions that I write to help me succeed using the framework.
 
 
-## Azure Functions custom bindings
+## Custom Bindings
 
 Azure functions allows you to write code without worrying too much about the infrastructure behind (aka Serverless).
 
