@@ -10,21 +10,21 @@ using System.Threading.Tasks;
 namespace Fbeltrao.AzureFunctionExtensions
 {
     /// <summary>
-    /// Collector for <see cref="RedisItem"/>    
+    /// Collector for <see cref="RedisOutput"/>    
     /// </summary>
-    public class RedisItemAsyncCollector : IAsyncCollector<RedisItem>
+    public class RedisOutputAsyncCollector : IAsyncCollector<RedisOutput>
     {
-        readonly RedisExtensionConfigProvider config;
-        readonly RedisAttribute attr;
+        readonly RedisConfiguration config;
+        readonly RedisOutputAttribute attr;
         readonly IRedisDatabaseManager redisDatabaseManager;
-        readonly List<RedisItem> redisItemCollection;
+        readonly List<RedisOutput> redisOutputCollection;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="config"></param>
         /// <param name="attr"></param>
-        public RedisItemAsyncCollector(RedisExtensionConfigProvider config, RedisAttribute attr) : this(config, attr, RedisDatabaseManager.GetInstance())
+        public RedisOutputAsyncCollector(RedisConfiguration config, RedisOutputAttribute attr) : this(config, attr, RedisDatabaseManager.GetInstance())
         {
         }
 
@@ -33,12 +33,12 @@ namespace Fbeltrao.AzureFunctionExtensions
         /// </summary>
         /// <param name="config"></param>
         /// <param name="attr"></param>
-        public RedisItemAsyncCollector(RedisExtensionConfigProvider config, RedisAttribute attr, IRedisDatabaseManager redisDatabaseManager)
+        public RedisOutputAsyncCollector(RedisConfiguration config, RedisOutputAttribute attr, IRedisDatabaseManager redisDatabaseManager)
         {
             this.config = config;
             this.attr = attr;
             this.redisDatabaseManager = redisDatabaseManager;
-            this.redisItemCollection = new List<RedisItem>();
+            this.redisOutputCollection = new List<RedisOutput>();
         }
 
         /// <summary>
@@ -47,10 +47,10 @@ namespace Fbeltrao.AzureFunctionExtensions
         /// <param name="item"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task AddAsync(RedisItem item, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task AddAsync(RedisOutput item, CancellationToken cancellationToken = default(CancellationToken))
         {
             // create item based on the item + attribute + configuration
-            var finalItem = new RedisItem()
+            var finalItem = new RedisOutput()
             {
                 BinaryValue = item.BinaryValue,
                 ObjectValue = item.ObjectValue,
@@ -58,22 +58,22 @@ namespace Fbeltrao.AzureFunctionExtensions
                 Key = Utils.MergeValueForProperty(item.Key, attr.Key, config.Key),
                 TimeToLive = Utils.MergeValueForNullableProperty<TimeSpan>(item.TimeToLive, attr.TimeToLive, config.TimeToLive),
                 IncrementValue = item.IncrementValue,
-                RedisItemOperation = item.RedisItemOperation
+                Operation = item.Operation
             };
 
-            if (finalItem.RedisItemOperation == RedisItemOperation.NotSet)
+            if (finalItem.Operation == RedisOutputOperation.NotSet)
             {
-                if (attr.RedisItemOperation != RedisItemOperation.NotSet)
-                    finalItem.RedisItemOperation = attr.RedisItemOperation;
+                if (attr.Operation != RedisOutputOperation.NotSet)
+                    finalItem.Operation = attr.Operation;
                 else
-                    finalItem.RedisItemOperation = config.RedisItemOperation;
+                    finalItem.Operation = config.RedisItemOperation;
             }
 
 
 
             if (this.config.SendInBatch)
             {
-                this.redisItemCollection.Add(finalItem);
+                this.redisOutputCollection.Add(finalItem);
             }
             else
             {
@@ -88,7 +88,7 @@ namespace Fbeltrao.AzureFunctionExtensions
         /// <returns></returns>
         public async Task FlushAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            foreach (var item in this.redisItemCollection)
+            foreach (var item in this.redisOutputCollection)
             {
                 await SendToRedis(item);
 
@@ -98,38 +98,38 @@ namespace Fbeltrao.AzureFunctionExtensions
         }
 
         /// <summary>
-        /// Sends <see cref="RedisItem"/> to Redis
+        /// Sends <see cref="RedisOutput"/> to Redis
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        async Task SendToRedis(RedisItem item)
+        async Task SendToRedis(RedisOutput item)
         {
             var connectionString = Utils.MergeValueForProperty(attr.Connection, config.Connection);            
             var db = redisDatabaseManager.GetDatabase(connectionString); // TODO: add support for multiple databases
 
             RedisValue value = CreateRedisValue(item);
 
-            switch (item.RedisItemOperation)
+            switch (item.Operation)
             {
-                case RedisItemOperation.SetKeyValue:
+                case RedisOutputOperation.SetKeyValue:
                     {
                         await db.StringSetAsync(item.Key, value, item.TimeToLive, When.Always, CommandFlags.FireAndForget);
                         break;
                     }
 
-                case RedisItemOperation.IncrementValue:
+                case RedisOutputOperation.IncrementValue:
                     {
                         await db.StringIncrementAsync(item.Key, item.IncrementValue);
                         break;
                     }
 
-                case RedisItemOperation.ListRightPush:
+                case RedisOutputOperation.ListRightPush:
                     {
                         await db.ListRightPushAsync(item.Key, value, When.Always, CommandFlags.FireAndForget);
                         break;
                     }
 
-                case RedisItemOperation.ListLeftPush:
+                case RedisOutputOperation.ListLeftPush:
                     {
                         await db.ListLeftPushAsync(item.Key, value, When.Always, CommandFlags.FireAndForget);
                         break;
@@ -138,11 +138,11 @@ namespace Fbeltrao.AzureFunctionExtensions
         }
 
         /// <summary>
-        /// Helper method that creates a <see cref="RedisValue"/> based on <see cref="RedisItem"/>
+        /// Helper method that creates a <see cref="RedisValue"/> based on <see cref="RedisOutput"/>
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        private RedisValue CreateRedisValue(RedisItem item)
+        private RedisValue CreateRedisValue(RedisOutput item)
         {
             RedisValue returnValue = RedisValue.Null;
             if (item.BinaryValue != null)

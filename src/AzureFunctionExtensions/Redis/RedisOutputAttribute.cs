@@ -9,7 +9,7 @@ namespace Fbeltrao.AzureFunctionExtensions
     /// </summary>
     [AttributeUsage(AttributeTargets.ReturnValue | AttributeTargets.Parameter)]
     [Binding]
-    public sealed class RedisAttribute : Attribute, IConnectionProvider
+    public sealed class RedisOutputAttribute : Attribute, IConnectionProvider
     {
         /// <summary>
         /// Redis item key
@@ -30,9 +30,9 @@ namespace Fbeltrao.AzureFunctionExtensions
 
         /// <summary>
         /// Sets the operation to performed in Redis
-        /// Default is <see cref="RedisItemOperation.SetKeyValue"/>
+        /// Default is <see cref="RedisOutputOperation.SetKeyValue"/>
         /// </summary>
-        public RedisItemOperation RedisItemOperation { get; set; } = RedisItemOperation.SetKeyValue;
+        public RedisOutputOperation Operation { get; set; } = RedisOutputOperation.SetKeyValue;
        
         /// <summary>
         /// Time to live in Redis

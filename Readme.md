@@ -1,8 +1,8 @@
-# Azure Functions custom Bindings
+# Azure Functions custom bindings
 
 Azure functions allows you to write code without worrying too much about the infrastructure behind (aka Serverless).
 
-Serverless is often used in [event driven architecture](https://docs.microsoft.com/en-us/azure/architecture/guide/architecture-styles/event-driven) where your code react as events are happening around it: a file is created, a new user is registered, etc.
+Serverless is often used in an [event driven architecture](https://docs.microsoft.com/en-us/azure/architecture/guide/architecture-styles/event-driven), where your code react as events are happening around it: a file is created, a new user is registered, etc.
 
 Usually a function has a trigger (the reason why it should run) and an output (what is the end result).
 
@@ -23,7 +23,7 @@ Outputs, on the other hand, can be [customized](https://github.com/Azure/azure-w
 
 ## Why should I write my own output binding?
 
-Let's imagine you work in a team that is using Azure Functions heavily. Some of your functions write computed results to Redis. Without using custom bindings your code would look like this:
+Let's imagine you work in a team that is using Azure Functions heavily. Some of your functions write computed results to Redis to be consumed by a Frontend App. Without using custom bindings your code would look like this:
 
 ```C#
 public static void WriteToRedisFunction1()
@@ -94,7 +94,7 @@ Creating a custom binding requires a [few steps](https://github.com/Azure/azure-
 /// </summary>
 [AttributeUsage(AttributeTargets.ReturnValue | AttributeTargets.Parameter)]
 [Binding]
-public sealed class RedisAttribute : Attribute, IConnectionProvider
+public sealed class RedisOutputAttribute : Attribute, IConnectionProvider
 {
     /// <summary>
     /// Redis item key
@@ -115,9 +115,9 @@ public sealed class RedisAttribute : Attribute, IConnectionProvider
 
     /// <summary>
     /// Sets the operation to performed in Redis
-    /// Default is <see cref="RedisItemOperation.SetKeyValue"/>
+    /// Default is <see cref="RedisOutputOperation.SetKeyValue"/>
     /// </summary>
-    public RedisItemOperation RedisItemOperation { get; set; } = RedisItemOperation.SetKeyValue;
+    public RedisOutputOperation Operation { get; set; } = RedisOutputOperation.SetKeyValue;
     
     /// <summary>
     /// Time to live in Redis
@@ -129,9 +129,9 @@ public sealed class RedisAttribute : Attribute, IConnectionProvider
 2. Implement the Redis item definition
 ```CSharp
 /// <summary>
-/// Defines a Redis item to be saved
+/// Defines a Redis item to be saved into the database
 /// </summary>
-public class RedisItem 
+public class RedisOutput 
 {
     /// <summary>
     /// Redis item key
@@ -161,7 +161,7 @@ public class RedisItem
     /// Sets the operation to performed in Redis
     /// </summary>
     [JsonProperty("operation")]
-    public RedisItemOperation RedisItemOperation { get; set; }
+    public RedisOutputOperation Operation { get; set; }
 
     /// <summary>
     /// Time to live in Redis
@@ -170,7 +170,7 @@ public class RedisItem
     public TimeSpan? TimeToLive { get; set; }
 
     /// <summary>
-    /// Value to increment by when used in combination with <see cref="RedisItemOperation.IncrementValue"/>
+    /// Value to increment by when used in combination with <see cref="RedisOutputOperation.IncrementValue"/>
     /// Default: 1
     /// </summary>
     [JsonProperty("incrementValue")]
@@ -178,24 +178,22 @@ public class RedisItem
 }
 ```
 
-3. Implement the part that sends a single/multiple RedisItem to Redis, by implementing an IAsyncCollector:
+3. Implement the part that sends a single/multiple RedisOutput to Redis, by implementing an IAsyncCollector:
 ```CSharp
 /// <summary>
 /// Collector for <see cref="RedisItem"/>
 /// </summary>
-public class RedisItemAsyncCollector : IAsyncCollector<RedisItem>
+public class RedisOutputAsyncCollector : IAsyncCollector<RedisOutput>
 {
-    readonly RedisExtensionConfigProvider config;
-    readonly RedisAttribute attr;
-    readonly IRedisDatabaseManager redisDatabaseManager;
-    readonly List<RedisItem> redisItemCollection;
+
+    ...
 
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="config"></param>
     /// <param name="attr"></param>
-    public RedisItemAsyncCollector(RedisExtensionConfigProvider config, RedisAttribute attr) : this(config, attr, RedisDatabaseManager.GetInstance())
+    public RedisItemAsyncCollector(RedisExtensionConfigProvider config, RedisOutputAttribute attr) : this(config, attr, RedisDatabaseManager.GetInstance())
     {
     }
 
@@ -204,12 +202,12 @@ public class RedisItemAsyncCollector : IAsyncCollector<RedisItem>
     /// </summary>
     /// <param name="config"></param>
     /// <param name="attr"></param>
-    public RedisItemAsyncCollector(RedisExtensionConfigProvider config, RedisAttribute attr, IRedisDatabaseManager redisDatabaseManager)
+    public RedisItemAsyncCollector(RedisExtensionConfigProvider config, RedisOutputAttribute attr, IRedisDatabaseManager redisDatabaseManager)
     {
         this.config = config;
         this.attr = attr;
         this.redisDatabaseManager = redisDatabaseManager;
-        this.redisItemCollection = new List<RedisItem>();
+        this.redisOutputCollection = new List<RedisOutput>();
     }
 
     /// <summary>
@@ -218,7 +216,7 @@ public class RedisItemAsyncCollector : IAsyncCollector<RedisItem>
     /// <param name="item"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task AddAsync(RedisItem item, CancellationToken cancellationToken = default(CancellationToken))
+    public async Task AddAsync(RedisOutput item, CancellationToken cancellationToken = default(CancellationToken))
     {
         ...
     }
@@ -241,7 +239,7 @@ public class RedisItemAsyncCollector : IAsyncCollector<RedisItem>
 /// <summary>
 /// Initializes the Redis binding
 /// </summary>
-public class RedisExtensionConfigProvider : IExtensionConfigProvider
+public class RedisConfiguration : IExtensionConfigProvider
 {
     ...
 
@@ -252,11 +250,17 @@ public class RedisExtensionConfigProvider : IExtensionConfigProvider
     public void Initialize(ExtensionConfigContext context)
     {
         // Converts json to RedisItem
-        context.AddConverter<JObject, RedisItem>(input => input.ToObject<RedisItem>());
+        context.AddConverter<JObject, RedisOutput>(input => input.ToObject<RedisOutput>());
 
-        // Use RedisItemAsyncCollector to send items to Redis
-        context.AddBindingRule<RedisAttribute>()
-            .BindToCollector<RedisItem>(attr => new RedisItemAsyncCollector(this, attr));
+        // Redis output binding
+        context
+            .AddBindingRule<RedisOutputAttribute>()
+            .BindToCollector<RedisOutput>(attr => new RedisOutputAsyncCollector(this, attr));
+
+        // Redis database (input) binding
+        context
+            .AddBindingRule<RedisDatabaseAttribute>()
+            .BindToInput<IDatabase>(ResolveRedisDatabase);
     }
 }
 ```
@@ -276,11 +280,9 @@ Parts of the code were removed to keep the post simple. Check the source code fo
 [FunctionName(nameof(SetValueInRedis))]
 public static IActionResult SetValueInRedis(
     [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
-    [Redis(Connection = "%redis_connectionstring%", Key = "%redis_setvalueinredis_key%")]  out RedisItem redisItem,
+    [RedisOutput(Connection = "%redis_connectionstring%", Key = "%redis_setvalueinredis_key%")]  out RedisOutput redisItem,
     TraceWriter log)
 {
-    log.Info("C# HTTP trigger function processed a request.");
-
     string requestBody = new StreamReader(req.Body).ReadToEnd();
 
     redisItem = new RedisItem()
@@ -294,8 +296,8 @@ public static IActionResult SetValueInRedis(
 
 ### HttpCall
 ```CSharp
- /// <summary>
-/// Calls the return url in <see cref="SearchFlightCommand.ReturnUrl"/>
+/// <summary>
+/// Calls a web site to notify about a change
 /// </summary>
 /// <param name="messages"></param>
 /// <param name="log"></param>
@@ -321,7 +323,7 @@ public static async Task CallWebsite(
 
 | Type | Description |
 |--|--|
-|Redis| Allows a function to interact with Redis. Following operations are currently support: add/insert to lists, set a key, increment a key value in Redis|
-|HttpCall| Allows a function to make an HTTP call easily, handy when you need to call a Webhook or a callback web site.|
+|Redis| Allows a function to interact with Redis. Following operations are currently support: add/insert item to lists, set a key, increment a key value in Redis. For more read (or more complex operations) you can use the [RedisDatabase] attribute that will resolve a IDatabase to your function |
+|HttpCall| Allows a function to make an HTTP call easily, handy when you need to call a Webhook or a callback web site to notify a change.|
 
 Have a suggestion? Create an issue and I will take a look.

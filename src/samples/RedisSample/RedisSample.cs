@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Newtonsoft.Json;
 using Fbeltrao.AzureFunctionExtensions;
+using StackExchange.Redis;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace CSharpSample
 {
@@ -15,6 +18,65 @@ namespace CSharpSample
     /// </summary>
     public static class RedisSample
     {
+        /// <summary>
+        /// Retrieve the current value of a value in Redis
+        /// </summary>
+        /// <param name="req"></param>
+        /// <param name="redisItem"></param>
+        /// <param name="log"></param>
+        /// <returns></returns>
+        [FunctionName(nameof(RetrieveIntegerValue))]
+        public static async Task<IActionResult> RetrieveIntegerValue(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
+            [RedisDatabase(Connection = "%redis_connectionstring%")] IDatabase db,
+            TraceWriter log)
+        {
+            log.Info("C# HTTP trigger function processed a request.");
+
+            var key = req.Query["key"].ToString();
+            if (string.IsNullOrEmpty(key))
+                return new BadRequestObjectResult("Please pass a key on the query string or in the request body");
+
+            var result = await db.StringGetAsync(key);
+            if (result.IsNullOrEmpty)
+                return new NotFoundResult();
+
+            return new OkObjectResult((int)result);
+        }
+
+
+        /// <summary>
+        /// Retrieve the current value of a list in Redis
+        /// </summary>
+        /// <param name="req"></param>
+        /// <param name="redisItem"></param>
+        /// <param name="log"></param>
+        /// <returns></returns>
+        [FunctionName(nameof(RetrieveList))]
+        public static async Task<IActionResult> RetrieveList(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
+            [RedisDatabase(Connection = "%redis_connectionstring%")] IDatabase db,
+            TraceWriter log)
+        {
+            var key = req.Query["key"].ToString();
+            if (string.IsNullOrEmpty(key))
+                return new BadRequestObjectResult("Please pass a key on the query string or in the request body");
+
+            var list = await db.ListRangeAsync(key);
+            var resultList = new List<string>();
+
+            if (list != null)
+            {
+                foreach (var srcItem in list)
+                {
+                    if (!srcItem.IsNullOrEmpty)
+                        resultList.Add((string)srcItem);
+                }
+            }
+            
+            return new OkObjectResult(resultList);
+        }
+
         /// <summary>
         /// Increments a value in Redis
         /// </summary>
@@ -25,11 +87,9 @@ namespace CSharpSample
         [FunctionName(nameof(IncrementRedisValue))]
         public static IActionResult IncrementRedisValue(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req, 
-            [Redis(Connection = "%redis_connectionstring%")] out RedisItem redisItem,
+            [RedisOutput(Connection = "%redis_connectionstring%")] out RedisOutput redisItem,
             TraceWriter log)
         {
-            log.Info("C# HTTP trigger function processed a request.");
-
             redisItem = null;
 
             string requestBody = new StreamReader(req.Body).ReadToEnd();
@@ -48,10 +108,10 @@ namespace CSharpSample
                 return new BadRequestObjectResult("Please pass a value on the query string or in the request body");
             }
 
-            redisItem = new RedisItem()
+            redisItem = new RedisOutput()
             {
                 Key = key,
-                RedisItemOperation = RedisItemOperation.IncrementValue,
+                Operation = RedisOutputOperation.IncrementValue,
                 IncrementValue = value
             };
 
@@ -69,14 +129,14 @@ namespace CSharpSample
         [FunctionName(nameof(SetValueInRedis))]
         public static IActionResult SetValueInRedis(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
-            [Redis(Connection = "%redis_connectionstring%", Key = "%redis_setvalueinredis_key%")]  out RedisItem redisItem,
+            [RedisOutput(Connection = "%redis_connectionstring%", Key = "%redis_setvalueinredis_key%")]  out RedisOutput redisItem,
             TraceWriter log)
         {
             log.Info("C# HTTP trigger function processed a request.");
 
             string requestBody = new StreamReader(req.Body).ReadToEnd();
 
-            redisItem = new RedisItem()
+            redisItem = new RedisOutput()
             {
                 TextValue = requestBody
             };
@@ -95,16 +155,16 @@ namespace CSharpSample
         [FunctionName(nameof(AppendToListInRedis))]
         public static IActionResult AppendToListInRedis(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-            [Redis(Connection = "%redis_connectionstring%", Key = "myList", RedisItemOperation = RedisItemOperation.ListRightPush)]  out RedisItem redisItem,
+            [RedisOutput(Connection = "%redis_connectionstring%", Key = "myList", Operation = RedisOutputOperation.ListRightPush)]  out RedisOutput redisItem,
             TraceWriter log)
         {
-            log.Info("C# HTTP trigger function processed a request.");
+            string itemValue = new StreamReader(req.Body).ReadToEnd();
+            if (string.IsNullOrEmpty(itemValue))
+                itemValue = req.Query["value"].ToString();
 
-            string requestBody = new StreamReader(req.Body).ReadToEnd();
-
-            redisItem = new RedisItem()
+            redisItem = new RedisOutput()
             {
-                TextValue = requestBody
+                TextValue = itemValue
             };
 
             return new OkResult();
@@ -121,16 +181,16 @@ namespace CSharpSample
         [FunctionName(nameof(InsertToListInRedis))]
         public static IActionResult InsertToListInRedis(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-            [Redis(Connection = "%redis_connectionstring%", Key = "myList", RedisItemOperation = RedisItemOperation.ListLeftPush)]  out RedisItem redisItem,
+            [RedisOutput(Connection = "%redis_connectionstring%", Key = "myList", Operation = RedisOutputOperation.ListLeftPush)] out RedisOutput redisItem,
             TraceWriter log)
         {
-            log.Info("C# HTTP trigger function processed a request.");
+            string itemValue = new StreamReader(req.Body).ReadToEnd();
+            if (string.IsNullOrEmpty(itemValue))
+                itemValue = req.Query["value"].ToString();
 
-            string requestBody = new StreamReader(req.Body).ReadToEnd();
-
-            redisItem = new RedisItem()
+            redisItem = new RedisOutput()
             {
-                TextValue = requestBody
+                TextValue = itemValue
             };
 
             return new OkResult();

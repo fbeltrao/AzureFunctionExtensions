@@ -4,9 +4,9 @@ using System;
 namespace Fbeltrao.AzureFunctionExtensions
 {
     /// <summary>
-    /// Defines a Redis item to be saved
+    /// Defines a Redis item to be saved into the database
     /// </summary>
-    public class RedisItem 
+    public class RedisOutput 
     {
         /// <summary>
         /// Redis item key
@@ -36,7 +36,7 @@ namespace Fbeltrao.AzureFunctionExtensions
         /// Sets the operation to performed in Redis
         /// </summary>
         [JsonProperty("operation")]
-        public RedisItemOperation RedisItemOperation { get; set; }
+        public RedisOutputOperation Operation { get; set; }
 
         /// <summary>
         /// Time to live in Redis
@@ -45,7 +45,7 @@ namespace Fbeltrao.AzureFunctionExtensions
         public TimeSpan? TimeToLive { get; set; }
 
         /// <summary>
-        /// Value to increment by when used in combination with <see cref="RedisItemOperation.IncrementValue"/>
+        /// Value to increment by when used in combination with <see cref="RedisOutputOperation.IncrementValue"/>
         /// Default: 1
         /// </summary>
         [JsonProperty("incrementValue")]

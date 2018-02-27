@@ -3,7 +3,7 @@
     /// <summary>
     /// Defines the possible item operations
     /// </summary>
-    public enum RedisItemOperation
+    public enum RedisOutputOperation
     {
         /// <summary>
         /// Not set

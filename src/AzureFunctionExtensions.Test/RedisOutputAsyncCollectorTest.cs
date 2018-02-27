@@ -8,22 +8,22 @@ using Xunit;
 namespace Fbeltrao.AzureFunctionExtensions.Test
 {
     /// <summary>
-    /// Tests for the <see cref="RedisItemAsyncCollector"/> interactions with Redis
+    /// Tests for the <see cref="RedisOutputAsyncCollector"/> interactions with Redis
     /// </summary>
-    public class RedisItemAsyncCollectorTest
+    public class RedisOutputAsyncCollectorTest
     {
         [Fact]
         public async Task SetKeyValue_ConnectionInConfig_KeyInAttribute_OperationInAttribute_SetsValue()
         {
-            var config = new RedisExtensionConfigProvider()
+            var config = new RedisConfiguration()
             {
                 Connection = "localhost:3679",                
             };
 
-            var attr = new RedisAttribute()
+            var attr = new RedisOutputAttribute()
             {
                 Key = "myKey",
-                RedisItemOperation = RedisItemOperation.SetKeyValue,
+                Operation = RedisOutputOperation.SetKeyValue,
             };
 
             var redisDatabase = new RedisDatabaseMock();
@@ -32,8 +32,8 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
             connectionManager.Setup(x => x.GetDatabase("localhost:3679", -1))
                 .Returns(redisDatabase);
 
-            var target = new RedisItemAsyncCollector(config, attr, connectionManager.Object);
-            await target.AddAsync(new RedisItem()
+            var target = new RedisOutputAsyncCollector(config, attr, connectionManager.Object);
+            await target.AddAsync(new RedisOutput()
             {
                 TextValue = "test"
             });
@@ -49,15 +49,15 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
         [Fact]
         public async Task IncrementValue_ConnectionInConfig_KeyInAttribute_OperationInAttribute_WithoutIncrementValue_IncrementsOne()
         {
-            var config = new RedisExtensionConfigProvider()
+            var config = new RedisConfiguration()
             {
                 Connection = "localhost:3679",
             };
 
-            var attr = new RedisAttribute()
+            var attr = new RedisOutputAttribute()
             {
                 Key = "myKey",
-                RedisItemOperation = RedisItemOperation.IncrementValue,                
+                Operation = RedisOutputOperation.IncrementValue,                
             };
 
             var redisDatabase = new RedisDatabaseMock();
@@ -66,8 +66,8 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
             connectionManager.Setup(x => x.GetDatabase("localhost:3679", -1))
                 .Returns(redisDatabase);
 
-            var target = new RedisItemAsyncCollector(config, attr, connectionManager.Object);
-            await target.AddAsync(new RedisItem()
+            var target = new RedisOutputAsyncCollector(config, attr, connectionManager.Object);
+            await target.AddAsync(new RedisOutput()
             {                
             });
 
@@ -82,15 +82,15 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
         [Fact]
         public async Task IncrementValue_ConnectionInConfig_KeyInAttribute_OperationInAttribute_By10_Increments10()
         {
-            var config = new RedisExtensionConfigProvider()
+            var config = new RedisConfiguration()
             {
                 Connection = "localhost:3679",
             };
 
-            var attr = new RedisAttribute()
+            var attr = new RedisOutputAttribute()
             {
                 Key = "myKey",
-                RedisItemOperation = RedisItemOperation.IncrementValue,
+                Operation = RedisOutputOperation.IncrementValue,
             };
 
             var redisDatabase = new RedisDatabaseMock();
@@ -99,8 +99,8 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
             connectionManager.Setup(x => x.GetDatabase("localhost:3679", -1))
                 .Returns(redisDatabase);
 
-            var target = new RedisItemAsyncCollector(config, attr, connectionManager.Object);
-            await target.AddAsync(new RedisItem()
+            var target = new RedisOutputAsyncCollector(config, attr, connectionManager.Object);
+            await target.AddAsync(new RedisOutput()
             {
                 IncrementValue = 10
             });
@@ -117,15 +117,15 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
         [Fact]
         public async Task ListRightPush_ConnectionInConfig_KeyInAttribute_OperationInAttribute_AddsItemToEndOfList()
         {
-            var config = new RedisExtensionConfigProvider()
+            var config = new RedisConfiguration()
             {
                 Connection = "localhost:3679",
             };
 
-            var attr = new RedisAttribute()
+            var attr = new RedisOutputAttribute()
             {
                 Key = "myKey",
-                RedisItemOperation = RedisItemOperation.ListRightPush,
+                Operation = RedisOutputOperation.ListRightPush,
             };
 
             var redisDatabase = new RedisDatabaseMock();
@@ -134,13 +134,13 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
             connectionManager.Setup(x => x.GetDatabase("localhost:3679", -1))
                 .Returns(redisDatabase);
 
-            var target = new RedisItemAsyncCollector(config, attr, connectionManager.Object);
-            await target.AddAsync(new RedisItem()
+            var target = new RedisOutputAsyncCollector(config, attr, connectionManager.Object);
+            await target.AddAsync(new RedisOutput()
             {
                 TextValue = "second last value"
             });
 
-            await target.AddAsync(new RedisItem()
+            await target.AddAsync(new RedisOutput()
             {
                 TextValue = "last value"
             });
@@ -159,15 +159,15 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
         [Fact]
         public async Task ListLeftPush_ConnectionInConfig_KeyInAttribute_OperationInAttribute_AddsItemToStartOfList()
         {
-            var config = new RedisExtensionConfigProvider()
+            var config = new RedisConfiguration()
             {
                 Connection = "localhost:3679",
             };
 
-            var attr = new RedisAttribute()
+            var attr = new RedisOutputAttribute()
             {
                 Key = "myKey",
-                RedisItemOperation = RedisItemOperation.ListLeftPush,
+                Operation = RedisOutputOperation.ListLeftPush,
             };
 
             var redisDatabase = new RedisDatabaseMock();
@@ -176,13 +176,13 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
             connectionManager.Setup(x => x.GetDatabase("localhost:3679", -1))
                 .Returns(redisDatabase);
 
-            var target = new RedisItemAsyncCollector(config, attr, connectionManager.Object);
-            await target.AddAsync(new RedisItem()
+            var target = new RedisOutputAsyncCollector(config, attr, connectionManager.Object);
+            await target.AddAsync(new RedisOutput()
             {
                 TextValue = "second value"
             });
 
-            await target.AddAsync(new RedisItem()
+            await target.AddAsync(new RedisOutput()
             {
                 TextValue = "first value"
             });
