@@ -1,23 +1,21 @@
 # Azure Function Extensions
-This repository contains a few Azure Function extensions that I write to help me succeed using the framework.
-
-
-## Custom Bindings
 
 Azure functions allows you to write code without worrying too much about the infrastructure behind (aka Serverless).
 
 Serverless is often used in an [event driven architecture](https://docs.microsoft.com/en-us/azure/architecture/guide/architecture-styles/event-driven), where your code react as events are happening around it: a file is created, a new user is registered, etc.
 
-Usually a function has a trigger (the reason why it should run) and an output (what is the end result of running it).
+This repository contains a few Azure Function extensions that I write to help me succeed using the framework.
+
+
+## Custom Bindings
+
+A function has a trigger (the reason why it should run) and usually an output (what is the end result of running it).
 
 |Triggers|Outputs|
 | ------------- |-------------|
 |<ul><li>An item was added to a queue</li><li>A direct HTTP call</li><li>A timer (every x minutes)</li><li>[many more](https://docs.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings#supported-bindings)</li>|<ul><li>Add an item to a queue</li><li>Send an email</li><li>Write to a database</li></ul>|
 
-
-Triggers are a bit more complicated to implement, since you need to implement a way to notify the function host once a trigger happens. 
-
-Outputs, on the other hand, are simple to be [customized](https://github.com/Azure/azure-webjobs-sdk/wiki/Creating-custom-input-and-output-bindings).
+Azure Functions framework allow you to write your own triggers and outputs. Triggers are a bit complicated to implement, since you need to implement a way to notify the function host once a trigger happens. Outputs, on the other hand, are simple to be [customized](https://github.com/Azure/azure-webjobs-sdk/wiki/Creating-custom-input-and-output-bindings).
 
 ### Why should I write my own output binding?
 
