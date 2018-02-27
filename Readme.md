@@ -6,24 +6,26 @@ Serverless is often used in an [event driven architecture](https://docs.microsof
 
 Usually a function has a trigger (the reason why it should run) and an output (what is the end result).
 
-Possible triggers:
-- An item was added to a queue
-- A direct HTTP call
-- A timer (every x minutes)
-- [many more](https://docs.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings#supported-bindings)
 
-Possible outputs:
-- Add an item to a queue
-- Send an email
-- Write to a database
+ Tables        | Are           | Cool  |
+| ------------- |:-------------:| -----:|
+| col 3 is      | right-aligned | $1600 |
+| col 2 is      | centered      |   $12 |
+| zebra stripes | are neat      |    $1 |
 
-Triggers are more complicated to customize because they need to be implemented inside the [Azure Function Host](https://github.com/Azure/azure-functions-host), and this is maintained by the Azure Functions team.
 
-Outputs, on the other hand, can be [customized](https://github.com/Azure/azure-webjobs-sdk/wiki/Creating-custom-input-and-output-bindings).
+|Triggers|Outputs|
+| ------------- |-------------|
+|<ul><li>An item was added to a queue</li><li>A direct HTTP call</li><li>A timer (every x minutes)</li><li>[many more](https://docs.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings#supported-bindings)</li>|<ul><li>Add an item to a queue</li><li>Send an email</li><li>Write to a database</li></ul>|
+
+
+Triggers are a bit more complicated to implement, since you need to implement a way to notify the function host once a trigger happens. 
+
+Outputs, on the other hand, are simple to be [customized](https://github.com/Azure/azure-webjobs-sdk/wiki/Creating-custom-input-and-output-bindings).
 
 ## Why should I write my own output binding?
 
-Let's imagine you work in a team that is using Azure Functions heavily. Some of your functions write computed results to Redis to be consumed by a Frontend App. Without using custom bindings your code would look like this:
+Let's imagine you work in a team that is using Azure Functions heavily. Some of your functions need to write computed results to Redis, which will be consumed by a Frontend App. Without using custom bindings your code would look like this:
 
 ```C#
 public static void WriteToRedisFunction1()
