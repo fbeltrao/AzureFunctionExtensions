@@ -319,8 +319,7 @@ public static async Task CallWebsite(
 
 | Type | Description |
 |--|--|
-|Redis| Allows a function to interact with Redis. Following operations are currently support: add/insert item to lists, set a key, increment a key value in Redis. For more read (or more complex operations) you can use the [RedisDatabase] attribute that will resolve a IDatabase to your function |
-|HttpCall| Allows a function to make an HTTP call easily, handy when you need to call a Webhook or a callback web site to notify a change.|
+|Redis| Allows a function to interact with Redis. Following operations are currently supported: add/insert item to lists, set a key, increment a key value in Redis. For read or more complex operations you can use the [RedisDatabase] attribute that will resolve a IDatabase to your function |
+|HttpCall| Allows a function to make an HTTP call easily, handy when you need to call a Webhook or an url to notify a change.|
 
 Have a suggestion? Create an issue and I will take a look.
-I am looking into adding custom event grid topic messages as output.
