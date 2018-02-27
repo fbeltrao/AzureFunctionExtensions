@@ -4,15 +4,7 @@ Azure functions allows you to write code without worrying too much about the inf
 
 Serverless is often used in an [event driven architecture](https://docs.microsoft.com/en-us/azure/architecture/guide/architecture-styles/event-driven), where your code react as events are happening around it: a file is created, a new user is registered, etc.
 
-Usually a function has a trigger (the reason why it should run) and an output (what is the end result).
-
-
- Tables        | Are           | Cool  |
-| ------------- |:-------------:| -----:|
-| col 3 is      | right-aligned | $1600 |
-| col 2 is      | centered      |   $12 |
-| zebra stripes | are neat      |    $1 |
-
+Usually a function has a trigger (the reason why it should run) and an output (what is the end result of running it).
 
 |Triggers|Outputs|
 | ------------- |-------------|
