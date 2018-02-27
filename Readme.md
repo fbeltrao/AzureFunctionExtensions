@@ -15,7 +15,7 @@ A function has a trigger (the reason why it should run) and usually an output (w
 | ------------- |-------------|
 |<ul><li>An item was added to a queue</li><li>A direct HTTP call</li><li>A timer (every x minutes)</li><li>[many more](https://docs.microsoft.com/en-us/azure/azure-functions/functions-triggers-bindings#supported-bindings)</li>|<ul><li>Add an item to a queue</li><li>Send an email</li><li>Write to a database</li></ul>|
 
-Azure Functions framework allow you to write your own triggers and outputs. Triggers are a bit complicated to implement, since you need to implement a way to notify the function host once a trigger happens. Outputs, on the other hand, are simple to be [customized](https://github.com/Azure/azure-webjobs-sdk/wiki/Creating-custom-input-and-output-bindings).
+The Azure Functions framework allows you to write your own triggers and outputs. Triggers are a bit complicated to implement, since you need to implement a way to notify the function host once a trigger happens. Outputs, on the other hand, are simple to be [customized](https://github.com/Azure/azure-webjobs-sdk/wiki/Creating-custom-input-and-output-bindings).
 
 ### Why should I write my own output binding?
 
@@ -174,10 +174,10 @@ public class RedisOutput
 }
 ```
 
-3. Implement the part that sends a single/multiple RedisOutput to Redis, by implementing an IAsyncCollector:
+3. Implement the code which sends single/multiple RedisOutput to Redis, by implementing an IAsyncCollector:
 ```CSharp
 /// <summary>
-/// Collector for <see cref="RedisItem"/>
+/// Collector for <see cref="RedisOutput"/>
 /// </summary>
 public class RedisOutputAsyncCollector : IAsyncCollector<RedisOutput>
 {
@@ -225,8 +225,7 @@ public class RedisOutputAsyncCollector : IAsyncCollector<RedisOutput>
     public async Task FlushAsync(CancellationToken cancellationToken = default(CancellationToken))
     {
         ...
-    }
-    
+    }    
 }
 ```
 
