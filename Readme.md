@@ -1,4 +1,8 @@
-# Azure Functions custom bindings
+# Azure Function Extensions
+This repository contains a few Azure Function extensions that I write to help me succeed using the framework.
+
+
+## Azure Functions custom bindings
 
 Azure functions allows you to write code without worrying too much about the infrastructure behind (aka Serverless).
 
@@ -15,7 +19,7 @@ Triggers are a bit more complicated to implement, since you need to implement a 
 
 Outputs, on the other hand, are simple to be [customized](https://github.com/Azure/azure-webjobs-sdk/wiki/Creating-custom-input-and-output-bindings).
 
-## Why should I write my own output binding?
+### Why should I write my own output binding?
 
 Let's imagine you work in a team that is using Azure Functions heavily. Some of your functions need to write computed results to Redis, which will be consumed by a Frontend App. Without using custom bindings your code would look like this:
 
@@ -78,7 +82,7 @@ public static void WriteToRedisFunction2(
 Testing is easier. You check the contents of the "redisOutput" to ensure the expected items were created. No DI needed.
 
 
-## Creating a custom output binding
+### Creating a custom output binding
 
 Creating a custom binding requires a [few steps](https://github.com/Azure/azure-webjobs-sdk/wiki/Creating-custom-input-and-output-bindings):
 1. Implement the attribute that glues the IAsyncCollector to your code
@@ -261,8 +265,8 @@ public class RedisConfiguration : IExtensionConfigProvider
 
 Parts of the code were removed to keep the post simple. Check the source code for the complete implementation.
 
-## Sample Functions
-### Redis
+### Sample Functions
+#### Redis
 ```CSharp
 /// <summary>
 /// Sets a value in Redis
@@ -288,7 +292,7 @@ public static IActionResult SetValueInRedis(
 }
 ```
 
-### HttpCall
+#### HttpCall
 ```CSharp
 /// <summary>
 /// Calls a web site to notify about a change
@@ -313,7 +317,7 @@ public static async Task CallWebsite(
 ```
 
 
-## What output bindings are available in this library?
+### What output bindings are available in this library?
 
 | Type | Description |
 |--|--|
