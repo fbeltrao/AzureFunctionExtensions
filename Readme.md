@@ -261,7 +261,7 @@ public class RedisConfiguration : IExtensionConfigProvider
 }
 ```
 
-Parts of the code were removed to keep the post simple. Check the source code for the complete implementation.
+Important: parts of the code were removed to keep the post simple. Check the source code for the complete implementation.
 
 ### Sample Functions
 #### Redis
