@@ -49,7 +49,7 @@ What if you could write your functions like this:
 
 ```C#
 public static void WriteToRedisFunction1(
-    [Redis] IAsyncCollector<RedisItem> redisOutput)
+    [RedisOutput] IAsyncCollector<RedisItem> redisOutput)
 {
     // do some magic
     var computedValue = new { magicNumber = 10 };
@@ -63,7 +63,7 @@ public static void WriteToRedisFunction1(
 }
 
 public static void WriteToRedisFunction2(
-    [Redis] IAsyncCollector<RedisItem> redisOutput
+    [RedisOutput] IAsyncCollector<RedisItem> redisOutput
 )
 {
     // do yet another magic
