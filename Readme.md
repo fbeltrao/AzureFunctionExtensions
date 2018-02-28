@@ -19,7 +19,7 @@ The Azure Functions framework allows you to write your own triggers and outputs.
 
 ### Why should I write my own output binding?
 
-Let's imagine you work in a team that is using Azure Functions heavily. Some of your functions need to write computed results to Redis, which will be consumed by a Frontend App. Without using custom bindings your code would look like this:
+Let's imagine that your team has a couple of workloads based on Azure Functions. Some of your functions need to write computed results to Redis, which will be consumed by a frontend App. Without using custom bindings your code would look like this (assuming you are using [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis)):
 
 ```C#
 public static void WriteToRedisFunction1()
@@ -49,13 +49,13 @@ What if you could write your functions like this:
 
 ```C#
 public static void WriteToRedisFunction1(
-    [RedisOutput] IAsyncCollector<RedisItem> redisOutput)
+    [RedisOutput] IAsyncCollector<RedisOutput> redisOutput)
 {
     // do some magic
     var computedValue = new { magicNumber = 10 };
 
     // write to a collection
-    redisOutput.AddAsync(new RedisItem()
+    redisOutput.AddAsync(new RedisOutput()
     {
         ObjectValue = computedValue
     });
@@ -63,14 +63,14 @@ public static void WriteToRedisFunction1(
 }
 
 public static void WriteToRedisFunction2(
-    [RedisOutput] IAsyncCollector<RedisItem> redisOutput
+    [RedisOutput] IAsyncCollector<RedisOutput> redisOutput
 )
 {
     // do yet another magic
     var anotherComputedValue = new { magicNumber = 20 };
 
     // write to a collection
-    redisOutput.AddAsync(new RedisItem()
+    redisOutput.AddAsync(new RedisOutput()
     {
         ObjectValue = computedValue
     });
@@ -83,7 +83,7 @@ Testing is easier. You check the contents of the "redisOutput" to ensure the exp
 ### Creating a custom output binding
 
 Creating a custom binding requires a [few steps](https://github.com/Azure/azure-webjobs-sdk/wiki/Creating-custom-input-and-output-bindings):
-1. Implement the attribute that glues the IAsyncCollector to your code
+1. Implement the attribute that tells the Azure Function host about your binding.
 ```CSharp
 /// <summary>
 /// Binds a function parameter to write to Redis
@@ -122,7 +122,7 @@ public sealed class RedisOutputAttribute : Attribute, IConnectionProvider
 }
 ```
 
-2. Implement the Redis item definition
+2. Define the Redis output object
 ```CSharp
 /// <summary>
 /// Defines a Redis item to be saved into the database
@@ -174,7 +174,7 @@ public class RedisOutput
 }
 ```
 
-3. Implement the code which sends single/multiple RedisOutput to Redis, by implementing an IAsyncCollector:
+3. Implement the code which sends single/multiple RedisOutputs to Redis, by implementing an IAsyncCollector:
 ```CSharp
 /// <summary>
 /// Collector for <see cref="RedisOutput"/>
