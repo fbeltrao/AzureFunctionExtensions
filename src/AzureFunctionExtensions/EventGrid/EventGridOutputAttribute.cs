@@ -34,5 +34,10 @@ namespace Fbeltrao.AzureFunctionExtensions
         /// Sets the Event Grid event subject
         /// </summary>
         public string Subject { get; set; }
+
+        /// <summary>
+        /// (Optional) Sets the Event Grid data version
+        /// </summary>
+        public string DataVersion { get; set; }
     }
 }

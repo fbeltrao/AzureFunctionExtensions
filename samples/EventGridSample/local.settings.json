@@ -4,7 +4,7 @@
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
     "AzureWebJobs_ExtensionsPath": ".",
-    "eventgrid_sas": "yaiHrIfTdpTjsAl93+zsqKr0Y4+TTglO/IMu8AASY64=",
-    "eventgrid_endpoint": "https://customer.westeurope-1.eventgrid.azure.net/api/events"
+    "eventgrid_sas": "<eventgrid-sas>",
+    "eventgrid_endpoint": "https://xxxx.westeurope-1.eventgrid.azure.net/api/events"
   }
 }

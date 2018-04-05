@@ -10,15 +10,24 @@ namespace Fbeltrao.AzureFunctionExtensions
     /// </summary>
     public class EventGridOutput
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public EventGridOutput()
         {
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public EventGridOutput(object data)
         {
             this.Data = data;
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public EventGridOutput(object data, string eventType, string subject)
         {
             this.Data = data;
@@ -26,6 +35,34 @@ namespace Fbeltrao.AzureFunctionExtensions
             this.Subject = subject;
         }
 
+      
+
+        /// <summary>
+        /// Sets the Event Grid event type
+        /// </summary>
+        [JsonProperty("eventType")]
+        public string EventType { get; set; }
+
+        /// <summary>
+        /// Sets the Event Grid event subject
+        /// </summary>
+        [JsonProperty("subject")]
+        public string Subject { get; set; }
+
+
+        /// <summary>
+        /// The event grid data
+        /// </summary>
+        [JsonProperty("data")]
+        public object Data { get; set; }
+
+        /// <summary>
+        /// (Optional) Sets the Event Grid data version
+        /// </summary>
+        [JsonProperty("dataVersion")]
+        public string DataVersion { get; set; }
+
+     
         /// <summary>
         /// Sets event type (Fluent API)
         /// </summary>
@@ -40,18 +77,6 @@ namespace Fbeltrao.AzureFunctionExtensions
 
 
         /// <summary>
-        /// Sets the Event Grid event type
-        /// </summary>
-        [JsonProperty("eventType")]
-        public string EventType { get; set; }
-
-        /// <summary>
-        /// Sets the Event Grid event subject
-        /// </summary>
-        [JsonProperty("subject")]
-        public string Subject { get; set; }
-
-        /// <summary>
         /// Sets subject (Fluent API)
         /// </summary>
         /// <param name="subject"></param>
@@ -62,10 +87,17 @@ namespace Fbeltrao.AzureFunctionExtensions
             return this;
         }
 
+
+
         /// <summary>
-        /// The event grid data
+        /// Sets data version (Fluent API)
         /// </summary>
-        [JsonProperty("data")]
-        public object Data { get; set; }
+        /// <param name="dataVersion"></param>
+        /// <returns></returns>
+        public EventGridOutput WithDataVersion(string dataVersion)
+        {
+            this.DataVersion = dataVersion;
+            return this;
+        }
     }
 }

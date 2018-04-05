@@ -20,7 +20,7 @@ namespace EventGridSample
         /// Publishes a Event Grid event with fix type and subject
         /// </summary>
         /// <param name="req"></param>
-        /// <param name="outputEvents"></param>
+        /// <param name="outputEvent"></param>
         /// <param name="log"></param>
         /// <returns></returns>
         [FunctionName(nameof(WithFixTypeAndSubject))]
@@ -78,7 +78,7 @@ namespace EventGridSample
                 new EventGridOutput(new { source = "MultipleSync", index = 2, ticks = DateTime.UtcNow.Ticks }),
                 new EventGridOutput(new { source = "MultipleSync", index = 3, ticks = DateTime.UtcNow.Ticks }),
                 new EventGridOutput(new { source = "MultipleSync", index = 4, ticks = DateTime.UtcNow.Ticks }),
-                new EventGridOutput(new { source = "MultipleSync", index = 5, ticks = DateTime.UtcNow.Ticks }),
+                new EventGridOutput(new { source = "MultipleSync", index = 5, ticks = DateTime.UtcNow.Ticks }).WithDataVersion("1.0"),
             };
 
             return new OkResult();
@@ -103,7 +103,7 @@ namespace EventGridSample
             await outputEvents.AddAsync(new EventGridOutput(new { source = "MultipleAsync", index = 2, ticks = DateTime.UtcNow.Ticks }));
             await outputEvents.AddAsync(new EventGridOutput(new { source = "MultipleAsync", index = 3, ticks = DateTime.UtcNow.Ticks }));
             await outputEvents.AddAsync(new EventGridOutput(new { source = "MultipleAsync", index = 4, ticks = DateTime.UtcNow.Ticks }));
-            await outputEvents.AddAsync(new EventGridOutput(new { source = "MultipleAsync", index = 5, ticks = DateTime.UtcNow.Ticks }));
+            await outputEvents.AddAsync(new EventGridOutput(new { source = "MultipleAsync", index = 5, ticks = DateTime.UtcNow.Ticks }).WithDataVersion("1.0"));
             
 
             return new OkResult();

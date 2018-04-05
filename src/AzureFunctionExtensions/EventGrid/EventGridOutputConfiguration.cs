@@ -7,6 +7,9 @@ using System.Text;
 
 namespace Fbeltrao.AzureFunctionExtensions
 {
+    /// <summary>
+    /// Configuration for EventGrid output
+    /// </summary>
     public class EventGridOutputConfiguration : IExtensionConfigProvider
     {
         /// <summary>
@@ -29,6 +32,11 @@ namespace Fbeltrao.AzureFunctionExtensions
         /// </summary>
         public string Subject { get; set; }
 
+        /// <summary>
+        /// (Optional) Sets the Event Grid data version
+        /// </summary>
+        public string DataVersion { get; set; }
+        
         public void Initialize(ExtensionConfigContext context)
         {
             // Allows user to bind to IAsyncCollector<JObject>, and the sdk will convert that to IAsyncCollector<HttpCallRequest>
@@ -37,15 +45,6 @@ namespace Fbeltrao.AzureFunctionExtensions
             context
                 .AddBindingRule<EventGridOutputAttribute>()
                 .BindToCollector<EventGridOutput>(attr => new EventGridOutputAsyncCollector(this, attr));
-
-            //context
-            //    .AddBindingRule<EventGridOutputAttribute>()
-            //    .BindToInput<EventGridOutputAsyncCollector>((attr) =>
-            //    {
-            //        return new EventGridOutputAsyncCollector(this, attr);
-            //    });
-
-
         }
     }
 }

@@ -10,12 +10,15 @@ using System.Threading.Tasks;
 
 namespace Fbeltrao.AzureFunctionExtensions
 {
+    /// <summary>
+    /// IAsyncCollector for <see cref="EventGridOutput"/>
+    /// </summary>
     public class EventGridOutputAsyncCollector : IAsyncCollector<EventGridOutput>
     {
         private EventGridOutputConfiguration config;
         private EventGridOutputAttribute attr;
         private readonly IHttpClientFactory httpClientFactory;
-        List<EventGridEvent> eventGridEvents;
+        List<AzureEventGridEvent> eventGridEvents;
 
 
         /// <summary>
@@ -38,7 +41,7 @@ namespace Fbeltrao.AzureFunctionExtensions
             this.config = config;
             this.attr = attr;
             this.httpClientFactory = httpClientFactory;
-            this.eventGridEvents = new List<EventGridEvent>();
+            this.eventGridEvents = new List<AzureEventGridEvent>();
         }
 
         
@@ -59,10 +62,7 @@ namespace Fbeltrao.AzureFunctionExtensions
             var topicEndpoint = Utils.MergeValueForProperty(attr.TopicEndpoint, config.TopicEndpoint);
             if (string.IsNullOrEmpty(topicEndpoint)) throw new ArgumentException("Topic endpoint is missing", nameof(topicEndpoint));
 
-            string jsonContent = JsonConvert.SerializeObject(this.eventGridEvents, new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            });
+            string jsonContent = JsonConvert.SerializeObject(this.eventGridEvents);
 
             var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
             content.Headers.Add("aeg-sas-key", sasKey);
@@ -80,15 +80,23 @@ namespace Fbeltrao.AzureFunctionExtensions
         /// <param name="config"></param>
         /// <param name="attr"></param>
         /// <returns></returns>
-        private static EventGridEvent CreateEventGridEvent(EventGridOutput @event, EventGridOutputConfiguration config, EventGridOutputAttribute attr)
+        private static AzureEventGridEvent CreateEventGridEvent(EventGridOutput @event, EventGridOutputConfiguration config, EventGridOutputAttribute attr)
         {
             var eventType = Utils.MergeValueForProperty(@event.EventType, config.EventType, attr.EventType);
             if (string.IsNullOrEmpty(eventType)) throw new ArgumentException("Event Grid event type is missing", nameof(eventType));
             
             var subject = Utils.MergeValueForProperty(@event.Subject, config.Subject, attr.Subject);
             if (string.IsNullOrEmpty(subject)) throw new ArgumentException("Event Grid event subject is missing", nameof(subject));
+            
 
-            return new EventGridEvent(@event.Data, eventType, subject);            
+            var eventGridEvent = new AzureEventGridEvent(@event.Data, eventType, subject);
+
+            // optional: data version
+            var dataVersion = Utils.MergeValueForProperty(@event.DataVersion, config.DataVersion, attr.DataVersion);
+            if (!string.IsNullOrEmpty(dataVersion))
+                eventGridEvent.DataVersion = dataVersion;            
+
+            return eventGridEvent;
         }
     }
 }
