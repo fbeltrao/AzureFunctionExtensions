@@ -6,8 +6,131 @@ Serverless is often used in an [event driven architecture](https://docs.microsof
 
 This repository contains a few Azure Function extensions that I write to help me succeed using the framework.
 
+## Contents
 
-## Custom Bindings
+- [Using this library](#using-this-library)
+- [Available Bindings in this library](#available-bindings)
+- [Examples](#examples)
+- [What is a Custom Binding?](#what-is-a-custom-binding)
+
+## <a name="using-this-library">Using this library</a>
+
+There are two ways to use this library:
+
+- Downloading the code and adding a project reference to use it
+- Use the nuget package *(in progress)*
+
+This library is targetting Azure Functions v2 version 1.0.6 for now. As long Visual Studio and the Azure Function runtime [don't play nice together](https://github.com/Azure/Azure-Functions/issues/625) I will not update the references to a newer version of the runtime. You can fork the code and update the nuget packages on your own.
+
+## <a name="available-bindings">Available Bindings in this library</a>
+
+| Direction | Type | Description |
+|--|--|--|
+|Output|Redis| Allows a function to interact with Redis. Following operations are currently supported: add/insert item to lists, set a key, increment a key value in Redis. For read or more complex operations you can use the [RedisDatabase] attribute that will resolve a IDatabase to your function |
+|Output|HttpCall| Allows a function to make an HTTP call easily, handy when you need to call a Webhook or an url to notify a change|
+|Output|EventGrid| Allows a function to easily publish Azure Event Grid events. **Important**: Subscribing to an Event Grid topic is already part of the Azure Function runtime, no need to use a custom binding|
+
+Have a suggestion? Create an issue and I will take a look.
+
+## <a name="examples">Examples</a>
+
+### **Redis**: Writing to Redis from an Azure Function
+
+```CSharp
+/// <summary>
+/// Sets a value in Redis
+/// </summary>
+/// <param name="req"></param>
+/// <param name="redisItem"></param>
+/// <param name="log"></param>
+/// <returns></returns>
+[FunctionName(nameof(SetValueInRedis))]
+public static IActionResult SetValueInRedis(
+    [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
+    [RedisOutput(Connection = "%redis_connectionstring%", Key = "%redis_setvalueinredis_key%")]  out RedisOutput redisItem,
+    TraceWriter log)
+{
+    string requestBody = new StreamReader(req.Body).ReadToEnd();
+
+    redisItem = new RedisItem()
+    {
+        TextValue = requestBody
+    };
+
+    return new OkResult();
+}
+```
+
+### **HttpCall**: Making a POST request to an URL
+
+```CSharp
+/// <summary>
+/// Calls a web site to notify about a change
+/// </summary>
+/// <param name="messages"></param>
+/// <param name="log"></param>
+/// <returns></returns>
+[FunctionName(nameof(CallWebsite))]
+public static async Task CallWebsite(     
+    [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
+    [HttpCall] IAsyncCollector<HttpCallMessage> messages, 
+    TraceWriter log)
+{    
+    // compute something
+    var computedValue = new { payload: "3123213" };
+
+    // computed value will be posted to another web site
+    await messages.AddAsync(new HttpCallMessage("url-to-webhook")
+        .AsJsonPost(computedValue)
+        );   
+}
+```
+
+### **EventGrid**: Publishing an Azure Event Grid event
+
+```CSharp
+/// <summary>
+/// Publishes an Event Grid event
+/// </summary>
+/// <param name="req"></param>
+/// <param name="outputEvent"></param>
+/// <param name="log"></param>
+/// <returns></returns>
+[FunctionName(nameof(WithFixTypeAndSubject))]
+public static IActionResult PublishEventGridEvent(
+    [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
+    [EventGridOutput(SasKey = "%eventgrid_sas%", TopicEndpoint = "%eventgrid_endpoint%",  EventType = "EventGridSample.PublishEventGridEvent.Event", Subject = "message/fromAzureFunction")] out EventGridOutput outputEvent,
+    TraceWriter log)
+{
+    outputEvent = null;
+
+    // POST? used the body as the content of the event
+    string requestBody = new StreamReader(req.Body).ReadToEnd();
+
+    if (!string.IsNullOrEmpty(requestBody))
+    {
+        outputEvent = new EventGridOutput(JsonConvert.DeserializeObject(requestBody));
+    }
+    else
+    {
+        outputEvent = new EventGridOutput(new
+        {
+            city = "Zurich",
+            country = "CHE",
+            customerID = 123120,
+            firstName = "Mark",
+            lastName = "Muller",
+            userID = "123",
+        })
+        .WithEventType("MyCompany.Customer.Created") // override the attribute event type
+        .WithSubject($"customer/created"); // override the attribute subject
+    }
+
+    return new OkResult();
+}
+```
+
+## <a name="what-is-a-custom-binding">What is a Custom Binding?</a>
 
 A function has a trigger (the reason why it should run) and usually an output (what is the end result of running it).
 
@@ -261,64 +384,3 @@ public class RedisConfiguration : IExtensionConfigProvider
 ```
 
 Important: parts of the code were removed to keep the post simple. Check the source code for the complete implementation.
-
-### Sample Functions
-#### Redis
-```CSharp
-/// <summary>
-/// Sets a value in Redis
-/// </summary>
-/// <param name="req"></param>
-/// <param name="redisItem"></param>
-/// <param name="log"></param>
-/// <returns></returns>
-[FunctionName(nameof(SetValueInRedis))]
-public static IActionResult SetValueInRedis(
-    [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
-    [RedisOutput(Connection = "%redis_connectionstring%", Key = "%redis_setvalueinredis_key%")]  out RedisOutput redisItem,
-    TraceWriter log)
-{
-    string requestBody = new StreamReader(req.Body).ReadToEnd();
-
-    redisItem = new RedisItem()
-    {
-        TextValue = requestBody
-    };
-
-    return new OkResult();
-}
-```
-
-#### HttpCall
-```CSharp
-/// <summary>
-/// Calls a web site to notify about a change
-/// </summary>
-/// <param name="messages"></param>
-/// <param name="log"></param>
-/// <returns></returns>
-[FunctionName(nameof(CallWebsite))]
-public static async Task CallWebsite(     
-    [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
-    [HttpCall] IAsyncCollector<HttpCallMessage> messages, 
-    TraceWriter log)
-{    
-    // compute something
-    var computedValue = new { payload: "3123213" };
-
-    // computed value will be posted to another web site
-    await messages.AddAsync(new HttpCallMessage("url-to-webhook")
-        .AsJsonPost(computedValue)
-        );   
-}
-```
-
-
-### What output bindings are available in this library?
-
-| Type | Description |
-|--|--|
-|Redis| Allows a function to interact with Redis. Following operations are currently supported: add/insert item to lists, set a key, increment a key value in Redis. For read or more complex operations you can use the [RedisDatabase] attribute that will resolve a IDatabase to your function |
-|HttpCall| Allows a function to make an HTTP call easily, handy when you need to call a Webhook or an url to notify a change.|
-
-Have a suggestion? Create an issue and I will take a look.

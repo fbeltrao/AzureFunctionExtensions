@@ -1,0 +1,10 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
+    "AzureWebJobs_ExtensionsPath": ".",
+    "redis_connectionstring": "10.211.55.2:6379",
+    "redis_setvalueinredis_key": "mySample"
+  }
+}
