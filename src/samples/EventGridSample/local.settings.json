@@ -1,0 +1,10 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
+    "AzureWebJobs_ExtensionsPath": ".",
+    "eventgrid_sas": "yaiHrIfTdpTjsAl93+zsqKr0Y4+TTglO/IMu8AASY64=",
+    "eventgrid_endpoint": "https://customer.westeurope-1.eventgrid.azure.net/api/events"
+  }
+}
