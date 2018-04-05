@@ -96,7 +96,7 @@ public static async Task CallWebsite(
 /// <param name="outputEvent"></param>
 /// <param name="log"></param>
 /// <returns></returns>
-[FunctionName(nameof(WithFixTypeAndSubject))]
+[FunctionName(nameof(PublishEventGridEvent))]
 public static IActionResult PublishEventGridEvent(
     [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
     [EventGridOutput(SasKey = "%eventgrid_sas%", TopicEndpoint = "%eventgrid_endpoint%",  EventType = "EventGridSample.PublishEventGridEvent.Event", Subject = "message/fromAzureFunction")] out EventGridOutput outputEvent,
