@@ -6,6 +6,8 @@ Serverless is often used in an [event driven architecture](https://docs.microsof
 
 This repository contains a few Azure Function extensions that I write to help me succeed using the framework.
 
+[![Build status](https://ci.appveyor.com/api/projects/status/y9340ak3kt9gkccb/branch/master?svg=true)](https://ci.appveyor.com/project/fbeltrao/azurefunctionextensions)
+
 ## Contents
 
 - [Using this library](#using-this-library)
