@@ -8,7 +8,7 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>Azure Functions</PackageTags>
     <RepositoryUrl>https://github.com/fbeltrao/AzureFunctionExtensions</RepositoryUrl>
-    <RepositoryType>GitHub</RepositoryType>
+    <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/fbeltrao/AzureFunctionExtensions</PackageProjectUrl>
     <Description>Set of Azure Function Extensions. Currently bindings:
 - Redis
@@ -16,6 +16,7 @@
 - EventGrid
 - Azure SignalR</Description>
     <Version>1.0.0-beta1</Version>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>

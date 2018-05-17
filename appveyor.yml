@@ -1,3 +1,4 @@
+version: '1.0.beta-{build}'
 image: Visual Studio 2017
 branches:
   only:
@@ -7,3 +8,16 @@ before_build:
   - cmd: dotnet --version
   # Restore
   - cmd: dotnet restore
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
+deploy:
+- provider: NuGet
+    api_key:
+        secure: 7f/reWi+FPW8VCYqLNXohUqgc8iuB2rP2U2erezMxlUvBQ1yQNZ6XnooAoFGKoSR
+   skipSymbols: true
