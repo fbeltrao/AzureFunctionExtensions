@@ -17,6 +17,9 @@
 - Azure SignalR</Description>
     <Version>1.0.0-beta1</Version>
     <NeutralLanguage>en</NeutralLanguage>
+    <Authors>fbeltrao</Authors>
+    <Company>fbeltrao</Company>
+    <Product>Azure Functions Extensions</Product>
   </PropertyGroup>
 
   <ItemGroup>

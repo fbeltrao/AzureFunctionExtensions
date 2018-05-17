@@ -20,9 +20,8 @@ This repository contains a few Azure Function extensions that I write to help me
 There are two ways to use this library:
 
 - Downloading the code and adding a project reference to use it
-- Use the nuget package *(in progress)*
+- Use the nuget package https://www.nuget.org/packages/Fbeltrao.AzureFunctionExtensions/
 
-This library is targetting Azure Functions v2 version 1.0.6 for now. As long Visual Studio and the Azure Function runtime [don't play nice together](https://github.com/Azure/Azure-Functions/issues/625) I will not update the references to a newer version of the runtime. You can fork the code and update the nuget packages on your own.
 
 ## <a name="available-bindings">Available Bindings in this library</a>
 
