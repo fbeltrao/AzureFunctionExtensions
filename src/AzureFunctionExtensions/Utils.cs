@@ -14,6 +14,23 @@ namespace Fbeltrao.AzureFunctionExtensions
         /// </summary>
         /// <param name="v1"></param>
         /// <param name="v2"></param>
+        /// <returns></returns>
+        internal static T MergeValueForProperty<T>(T v1, T v2) where T : class => v1 ?? v2;
+
+        /// <summary>
+        /// Merge values from the specified inputs
+        /// </summary>
+        /// <param name="v1"></param>
+        /// <param name="v2"></param>
+        /// <param name="v3"></param>
+        /// <returns></returns>
+        internal static T MergeValueForProperty<T>(T v1, T v2, T v3) where T: class => v1 ?? (v2 ?? v3);
+
+        /// <summary>
+        /// Merge values from the specified inputs
+        /// </summary>
+        /// <param name="v1"></param>
+        /// <param name="v2"></param>
         /// <param name="v3"></param>
         /// <returns></returns>
         internal static string MergeValueForProperty(string v1, string v2, string v3)
@@ -58,6 +75,20 @@ namespace Fbeltrao.AzureFunctionExtensions
                 return v2.Value;
             
             return defaultValue;
+        }
+
+        /// <summary>
+        /// Quick way to create a list of strings from a comma separated list <see cref="string"/>
+        /// Returns null if the <paramref name="commaSeparatedList"/> is null or empty
+        /// </summary>
+        /// <param name="commaSeparatedList"></param>
+        /// <returns></returns>
+        internal static IReadOnlyList<string> CreateListFrom(string commaSeparatedList)
+        {
+            if (string.IsNullOrEmpty(commaSeparatedList))
+                return null;
+
+            return commaSeparatedList.Split(',', ';');
         }
 
         /// <summary>

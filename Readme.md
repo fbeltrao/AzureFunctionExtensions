@@ -31,6 +31,7 @@ This library is targetting Azure Functions v2 version 1.0.6 for now. As long Vis
 |Output|Redis| Allows a function to interact with Redis. Following operations are currently supported: add/insert item to lists, set a key, increment a key value in Redis. For read or more complex operations you can use the [RedisDatabase] attribute that will resolve a IDatabase to your function |
 |Output|HttpCall| Allows a function to make an HTTP call easily, handy when you need to call a Webhook or an url to notify a change|
 |Output|EventGrid| Allows a function to easily publish Azure Event Grid events. **Important**: Subscribing to an Event Grid topic is already part of the Azure Function runtime, no need to use a custom binding|
+|Output|Azure SignalR| Allows a function to easily send messages to Azure SignalR connected clients. Allowed scopes are: broadcast to hub, to one or more groups and to one or more users. For more information about Azure SignalR Service [check here](https://docs.microsoft.com/en-us/azure/azure-signalr/signalr-overview)|
 
 Have a suggestion? Create an issue and I will take a look.
 
@@ -127,6 +128,33 @@ public static IActionResult PublishEventGridEvent(
         .WithEventType("MyCompany.Customer.Created") // override the attribute event type
         .WithSubject($"customer/created"); // override the attribute subject
     }
+
+    return new OkResult();
+}
+```
+
+### **Azure SignalR**: Sending messages to Azure SignalR Service from an Azure Function
+
+```CSharp
+/// <summary>
+/// Http triggered function to broadcast to a SignalR hub
+/// </summary>
+/// <param name="req"></param>
+/// <param name="redisItem"></param>
+/// <param name="log"></param>
+/// <returns></returns>
+[FunctionName(nameof(HttpTriggerBroadcastToHub))]
+public static IActionResult HttpTriggerBroadcastToHub(
+    [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
+    [SignalR(ServiceName = "%service_name%", AccessKey = "%access_key%")] out SignalRMessage message,
+    TraceWriter log)
+{
+    message = new SignalRMessage()
+    {
+        Target = "broadcastMessage",
+        Hub = "chat",
+        Arguments = new object[] { $"Hub broadcast from function {nameof(HttpTriggerBroadcastToHub)}", $"Now it is {DateTime.Now}" }
+    };
 
     return new OkResult();
 }
