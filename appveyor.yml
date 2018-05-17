@@ -17,7 +17,7 @@ dotnet_csproj:
   file_version: '{version}'
   informational_version: '{version}'
 deploy:
-- provider: NuGet
-    api_key:
-        secure: 7f/reWi+FPW8VCYqLNXohUqgc8iuB2rP2U2erezMxlUvBQ1yQNZ6XnooAoFGKoSR
-   skipSymbols: true
+  provider: NuGet
+  api_key:
+    secure: 7f/reWi+FPW8VCYqLNXohUqgc8iuB2rP2U2erezMxlUvBQ1yQNZ6XnooAoFGKoSR
+  skip_symbols: true
