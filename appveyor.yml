@@ -19,6 +19,5 @@ dotnet_csproj:
 deploy:
   provider: NuGet
   api_key:
-    secure: 7f/reWi+FPW8VCYqLNXohUqgc8iuB2rP2U2erezMxlUvBQ1yQNZ6XnooAoFGKoSR
-  skip_symbols: true
-  artifact: /.*\.nupkg/
+    secure: YrFj/G4a34ebcoJ30N9RMZiykKSMQuPe1crSm6bhQl/Bvj3NaXLpoNzdm4uum2fm
+  skip_symbols: true  
