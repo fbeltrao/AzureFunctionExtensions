@@ -16,6 +16,8 @@ dotnet_csproj:
   assembly_version: '{version}'
   file_version: '{version}'
   informational_version: '{version}'
+artifacts:
+    - path: '**\*.nupkg' # find all NuGet packages recursively
 deploy:
   provider: NuGet
   api_key:
