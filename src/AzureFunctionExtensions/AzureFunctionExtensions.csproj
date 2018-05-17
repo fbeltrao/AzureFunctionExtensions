@@ -1,9 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Fbeltrao.AzureFunctionExtensions</RootNamespace>
     <AssemblyName>Fbeltrao.AzureFunctionExtensions</AssemblyName>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>Azure Functions</PackageTags>
+    <RepositoryUrl>https://github.com/fbeltrao/AzureFunctionExtensions</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
+    <PackageProjectUrl>https://github.com/fbeltrao/AzureFunctionExtensions</PackageProjectUrl>
+    <Description>Set of Azure Function Extensions. Currently bindings:
+- Redis
+- HttpCall
+- EventGrid
+- Azure SignalR</Description>
+    <Version>1.0.0-beta1</Version>
   </PropertyGroup>
 
   <ItemGroup>
