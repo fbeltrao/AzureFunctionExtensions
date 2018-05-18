@@ -139,7 +139,7 @@ public static IActionResult PublishEventGridEvent(
 /// Http triggered function to broadcast to a SignalR hub
 /// </summary>
 /// <param name="req"></param>
-/// <param name="redisItem"></param>
+/// <param name="message"></param>
 /// <param name="log"></param>
 /// <returns></returns>
 [FunctionName(nameof(HttpTriggerBroadcastToHub))]
