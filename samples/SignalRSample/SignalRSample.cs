@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 
 namespace SignalRSample
 {
@@ -22,9 +23,9 @@ namespace SignalRSample
         public static async Task<IActionResult> HttpTriggerBroadcastToHub(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
             [SignalR(ServiceName = "%service_name%", AccessKey = "%access_key%")] IAsyncCollector<SignalRMessage> message,
-            TraceWriter log)
+            ILogger log)
         {
-            log.Info("C# HTTP trigger function processed a request.");
+            log.LogInformation("C# HTTP trigger function processed a request.");
 
 
             await message.AddAsync(new SignalRMessage()
@@ -48,9 +49,9 @@ namespace SignalRSample
         public static IActionResult HttpTriggerBroadcastToGroupHub(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
             [SignalR(ServiceName = "%service_name%", AccessKey = "%access_key%", Groups = "dashboard")] out SignalRMessage message,
-            TraceWriter log)
+            ILogger log)
         {
-            log.Info("C# HTTP trigger function processed a request.");
+            log.LogInformation("C# HTTP trigger function processed a request.");
 
 
 

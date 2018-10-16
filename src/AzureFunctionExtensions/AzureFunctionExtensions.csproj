@@ -15,17 +15,19 @@
 - HttpCall
 - EventGrid
 - Azure SignalR</Description>
-    <Version>1.0.0-beta1</Version>
+    <Version>1.0.1</Version>
     <NeutralLanguage>en</NeutralLanguage>
     <Authors>fbeltrao</Authors>
     <Company>fbeltrao</Company>
     <Product>Azure Functions Extensions</Product>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions" Version="3.0.0-beta5" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions" Version="3.0.0" />
     <PackageReference Include="StackExchange.Redis.StrongName.Core" Version="1.1.605" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.1.4" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.3.0" />
   </ItemGroup>
 
 </Project>

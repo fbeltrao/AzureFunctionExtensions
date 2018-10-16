@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Fbeltrao.AzureFunctionExtensions;
 using System.Threading.Tasks;
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace EventGridSample
 {
@@ -27,7 +28,7 @@ namespace EventGridSample
         public static IActionResult WithFixTypeAndSubject(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
             [EventGridOutput(SasKey = "%eventgrid_sas%", TopicEndpoint = "%eventgrid_endpoint%",  EventType = "EventGridSample.PublishEventGridEvent.Event", Subject = "message/fromAzureFunction")] out EventGridOutput outputEvent,
-            TraceWriter log)
+            ILogger log)
         {
             outputEvent = null;
 
@@ -69,7 +70,7 @@ namespace EventGridSample
         public static IActionResult MultipleSync(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
             [EventGridOutput(SasKey = "%eventgrid_sas%", TopicEndpoint = "%eventgrid_endpoint%", EventType = "EventGridSample.PublishEventGridEvent.Event", Subject = "message/fromAzureFunction")] out EventGridOutput[] outputEvents,
-            TraceWriter log)
+            ILogger log)
         {
             outputEvents = new EventGridOutput[]
             {
@@ -96,7 +97,7 @@ namespace EventGridSample
         public static async Task<IActionResult> MultipleAsync(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
             [EventGridOutput(SasKey = "%eventgrid_sas%", TopicEndpoint = "%eventgrid_endpoint%", EventType = "EventGridSample.PublishEventGridEvent.Event", Subject = "message/fromAzureFunction")] IAsyncCollector<EventGridOutput> outputEvents,
-            TraceWriter log)
+            ILogger log)
         {
             await outputEvents.AddAsync(new EventGridOutput(new { source = "MultipleAsync", index = 0, ticks = DateTime.UtcNow.Ticks }));
             await outputEvents.AddAsync(new EventGridOutput(new { source = "MultipleAsync", index = 1, ticks = DateTime.UtcNow.Ticks }));
