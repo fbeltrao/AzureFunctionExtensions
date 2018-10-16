@@ -413,3 +413,24 @@ public class RedisConfiguration : IExtensionConfigProvider
 ```
 
 Important: parts of the code were removed to keep the post simple. Check the source code for the complete implementation.
+
+5. Register the extensions using the WebJobsStartup attribute
+
+```c#
+[assembly: WebJobsStartup(typeof(Fbeltrao.AzureFunctionExtensions.Startup))]
+
+namespace Fbeltrao.AzureFunctionExtensions
+{
+    /// <summary>
+    /// Extension initializer
+    /// </summary>
+    public class Startup : IWebJobsStartup
+    {
+        public void Configure(IWebJobsBuilder builder)
+        {
+            builder.AddExtension<RedisConfiguration>();
+        }
+    }
+}
+
+```
