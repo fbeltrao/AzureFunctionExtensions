@@ -56,6 +56,10 @@ namespace Fbeltrao.AzureFunctionExtensions
 
         public async Task FlushAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
+            // Do nothing if no events were created
+            if (this.eventGridEvents == null || this.eventGridEvents.Count == 0)
+                return;
+
             var sasKey = Utils.MergeValueForProperty(attr.SasKey, config.SasKey);
             if (string.IsNullOrEmpty(sasKey)) throw new ArgumentException("Sas Key is missing", nameof(sasKey));
 

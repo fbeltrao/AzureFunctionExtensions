@@ -200,5 +200,44 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
             Assert.Equal("true", requestJson[0]["data"]["test"].ToString().ToLowerInvariant());
             
         }
+
+
+        [Fact]
+        public async Task Do_Nothing_If_No_Event_Was_Created()
+        {
+            var config = new EventGridOutputConfiguration()
+            {
+                SasKey = "1234594949=",
+                TopicEndpoint = "https://xxxx.westeurope-1.eventgrid.azure.net/api/events",
+                EventType = "My.Test",
+                Subject = "Test/1"
+            };
+
+            var attr = new EventGridOutputAttribute()
+            {
+            };
+
+            HttpRequestMessage message = null;
+            var httpMessageHandler = new HttpMessageHandlerMock()
+                .SetupHandler(req =>
+                {
+                    message = req;
+                    return new HttpResponseMessage(HttpStatusCode.OK);
+                });
+
+            var httpClient = new HttpClient(httpMessageHandler);
+
+            var httpClientFactory = new Mock<IHttpClientFactory>();
+            httpClientFactory.Setup(x => x.Create()).Returns(httpClient);
+
+            var target = new EventGridOutputAsyncCollector(config, attr, httpClientFactory.Object);
+
+             await target.FlushAsync();
+
+
+            //httpClientFactory.VerifyAll();
+
+            Assert.Null(message);            
+        }
     }
 }
