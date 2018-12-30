@@ -12,15 +12,7 @@ namespace Fbeltrao.AzureFunctionExtensions
     public class RedisConfiguration : IExtensionConfigProvider
     {
         private readonly IRedisDatabaseManager redisDatabaseManager;
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public RedisConfiguration() : this(RedisDatabaseManager.GetInstance())
-        {
-
-        }
-
+        
         /// <summary>
         /// Constructor
         /// </summary>
@@ -69,7 +61,7 @@ namespace Fbeltrao.AzureFunctionExtensions
             // Redis output binding
             context
                 .AddBindingRule<RedisOutputAttribute>()
-                .BindToCollector<RedisOutput>(attr => new RedisOutputAsyncCollector(this, attr));
+                .BindToCollector<RedisOutput>(attr => new RedisOutputAsyncCollector(this, attr, this.redisDatabaseManager));
 
             // Redis database (input) binding
             context

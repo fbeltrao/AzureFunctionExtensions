@@ -15,7 +15,8 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
         [Fact]
         public async Task SetKeyValue_ConnectionInConfig_KeyInAttribute_OperationInAttribute_SetsValue()
         {
-            var config = new RedisConfiguration()
+            var connectionManager = new Mock<IRedisDatabaseManager>();
+            var config = new RedisConfiguration(connectionManager.Object)
             {
                 Connection = "localhost:3679",                
             };
@@ -28,7 +29,7 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
 
             var redisDatabase = new RedisDatabaseMock();
 
-            var connectionManager = new Mock<IRedisDatabaseManager>();
+            
             connectionManager.Setup(x => x.GetDatabase("localhost:3679", -1))
                 .Returns(redisDatabase);
 
@@ -49,7 +50,8 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
         [Fact]
         public async Task IncrementValue_ConnectionInConfig_KeyInAttribute_OperationInAttribute_WithoutIncrementValue_IncrementsOne()
         {
-            var config = new RedisConfiguration()
+            var connectionManager = new Mock<IRedisDatabaseManager>();
+            var config = new RedisConfiguration(connectionManager.Object)
             {
                 Connection = "localhost:3679",
             };
@@ -62,7 +64,7 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
 
             var redisDatabase = new RedisDatabaseMock();
 
-            var connectionManager = new Mock<IRedisDatabaseManager>();
+            
             connectionManager.Setup(x => x.GetDatabase("localhost:3679", -1))
                 .Returns(redisDatabase);
 
@@ -82,7 +84,8 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
         [Fact]
         public async Task IncrementValue_ConnectionInConfig_KeyInAttribute_OperationInAttribute_By10_Increments10()
         {
-            var config = new RedisConfiguration()
+            var connectionManager = new Mock<IRedisDatabaseManager>();
+            var config = new RedisConfiguration(connectionManager.Object)
             {
                 Connection = "localhost:3679",
             };
@@ -95,7 +98,7 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
 
             var redisDatabase = new RedisDatabaseMock();
 
-            var connectionManager = new Mock<IRedisDatabaseManager>();
+            
             connectionManager.Setup(x => x.GetDatabase("localhost:3679", -1))
                 .Returns(redisDatabase);
 
@@ -117,7 +120,8 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
         [Fact]
         public async Task ListRightPush_ConnectionInConfig_KeyInAttribute_OperationInAttribute_AddsItemToEndOfList()
         {
-            var config = new RedisConfiguration()
+            var connectionManager = new Mock<IRedisDatabaseManager>();
+            var config = new RedisConfiguration(connectionManager.Object)
             {
                 Connection = "localhost:3679",
             };
@@ -130,7 +134,6 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
 
             var redisDatabase = new RedisDatabaseMock();
 
-            var connectionManager = new Mock<IRedisDatabaseManager>();
             connectionManager.Setup(x => x.GetDatabase("localhost:3679", -1))
                 .Returns(redisDatabase);
 
@@ -159,7 +162,8 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
         [Fact]
         public async Task ListLeftPush_ConnectionInConfig_KeyInAttribute_OperationInAttribute_AddsItemToStartOfList()
         {
-            var config = new RedisConfiguration()
+            var connectionManager = new Mock<IRedisDatabaseManager>();
+            var config = new RedisConfiguration(connectionManager.Object)
             {
                 Connection = "localhost:3679",
             };
@@ -172,7 +176,6 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
 
             var redisDatabase = new RedisDatabaseMock();
 
-            var connectionManager = new Mock<IRedisDatabaseManager>();
             connectionManager.Setup(x => x.GetDatabase("localhost:3679", -1))
                 .Returns(redisDatabase);
 

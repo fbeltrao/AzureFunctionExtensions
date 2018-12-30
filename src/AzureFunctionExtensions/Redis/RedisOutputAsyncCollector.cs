@@ -24,15 +24,7 @@ namespace Fbeltrao.AzureFunctionExtensions
         /// </summary>
         /// <param name="config"></param>
         /// <param name="attr"></param>
-        public RedisOutputAsyncCollector(RedisConfiguration config, RedisOutputAttribute attr) : this(config, attr, RedisDatabaseManager.GetInstance())
-        {
-        }
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="config"></param>
-        /// <param name="attr"></param>
+        /// <param name="redisDatabaseManager"></param>
         public RedisOutputAsyncCollector(RedisConfiguration config, RedisOutputAttribute attr, IRedisDatabaseManager redisDatabaseManager)
         {
             this.config = config;

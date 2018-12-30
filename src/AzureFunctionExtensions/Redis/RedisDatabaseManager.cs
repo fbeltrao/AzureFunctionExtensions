@@ -15,14 +15,10 @@ namespace Fbeltrao.AzureFunctionExtensions
         /// <summary>
         /// Constructor
         /// </summary>
-        protected RedisDatabaseManager()
+        public RedisDatabaseManager()
         {
             connections = new System.Collections.Concurrent.ConcurrentDictionary<string, Lazy<ConnectionMultiplexer>>();
         }
-
-        static RedisDatabaseManager instance = new RedisDatabaseManager();
-        public static IRedisDatabaseManager GetInstance() => instance;
-
 
         /// <summary>
         /// Gets the redis database
