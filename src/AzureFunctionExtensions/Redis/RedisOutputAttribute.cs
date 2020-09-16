@@ -29,6 +29,11 @@ namespace Fbeltrao.AzureFunctionExtensions
         public bool SendInBatch { get; set; } = true;
 
         /// <summary>
+        /// Send items in contiguous transaction to Redis
+        /// </summary>
+        public bool SendInTransaction { get; set; } = true;
+
+        /// <summary>
         /// Sets the operation to performed in Redis
         /// Default is <see cref="RedisOutputOperation.SetKeyValue"/>
         /// </summary>

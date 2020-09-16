@@ -46,7 +46,7 @@ namespace Fbeltrao.AzureFunctionExtensions
             {
                 BinaryValue = item.BinaryValue,
                 ObjectValue = item.ObjectValue,
-                TextValue = item.TextValue,                
+                TextValue = item.TextValue,
                 Key = Utils.MergeValueForProperty(item.Key, attr.Key, config.Key),
                 TimeToLive = Utils.MergeValueForNullableProperty<TimeSpan>(item.TimeToLive, attr.TimeToLive, config.TimeToLive),
                 IncrementValue = item.IncrementValue,
@@ -70,7 +70,7 @@ namespace Fbeltrao.AzureFunctionExtensions
             else
             {
                 await SendToRedis(finalItem);
-            }            
+            }
         }
 
         /// <summary>
@@ -80,13 +80,7 @@ namespace Fbeltrao.AzureFunctionExtensions
         /// <returns></returns>
         public async Task FlushAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            foreach (var item in this.redisOutputCollection)
-            {
-                await SendToRedis(item);
-
-                if (cancellationToken != null && cancellationToken.IsCancellationRequested)
-                    break;
-            }
+            await SendToRedis(this.redisOutputCollection.ToArray());
         }
 
         /// <summary>
@@ -94,39 +88,62 @@ namespace Fbeltrao.AzureFunctionExtensions
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        async Task SendToRedis(RedisOutput item)
+        async Task SendToRedis(params RedisOutput[] items)
         {
-            var connectionString = Utils.MergeValueForProperty(attr.Connection, config.Connection);            
+            var connectionString = Utils.MergeValueForProperty(attr.Connection, config.Connection);
             var db = redisDatabaseManager.GetDatabase(connectionString); // TODO: add support for multiple databases
-
-            RedisValue value = CreateRedisValue(item);
-
-            switch (item.Operation)
+            IDatabaseAsync dbAsync = db;
+            IBatch batch = null;
+            ITransaction transaction = null;
+            if (items.Length > 1)
             {
-                case RedisOutputOperation.SetKeyValue:
-                    {
-                        await db.StringSetAsync(item.Key, value, item.TimeToLive, When.Always, CommandFlags.FireAndForget);
-                        break;
-                    }
-
-                case RedisOutputOperation.IncrementValue:
-                    {
-                        await db.StringIncrementAsync(item.Key, item.IncrementValue);
-                        break;
-                    }
-
-                case RedisOutputOperation.ListRightPush:
-                    {
-                        await db.ListRightPushAsync(item.Key, value, When.Always, CommandFlags.FireAndForget);
-                        break;
-                    }
-
-                case RedisOutputOperation.ListLeftPush:
-                    {
-                        await db.ListLeftPushAsync(item.Key, value, When.Always, CommandFlags.FireAndForget);
-                        break;
-                    }
+                if (this.config.SendInTransaction)
+                {
+                    dbAsync = transaction = db.CreateTransaction();
+                }
+                else
+                {
+                    dbAsync = batch = db.CreateBatch();
+                }
             }
+            var tasks = new List<Task>();
+            foreach (var item in items)
+            {
+                RedisValue value = CreateRedisValue(item);
+
+                switch (item.Operation)
+                {
+                    case RedisOutputOperation.SetKeyValue:
+                        {
+                            tasks.Add(dbAsync.StringSetAsync(item.Key, value, item.TimeToLive, When.Always, CommandFlags.FireAndForget));
+                            break;
+                        }
+
+                    case RedisOutputOperation.IncrementValue:
+                        {
+                            tasks.Add(dbAsync.StringIncrementAsync(item.Key, item.IncrementValue));
+                            break;
+                        }
+
+                    case RedisOutputOperation.ListRightPush:
+                        {
+                            tasks.Add(dbAsync.ListRightPushAsync(item.Key, value, When.Always, CommandFlags.FireAndForget));
+                            break;
+                        }
+
+                    case RedisOutputOperation.ListLeftPush:
+                        {
+                            tasks.Add(dbAsync.ListLeftPushAsync(item.Key, value, When.Always, CommandFlags.FireAndForget));
+                            break;
+                        }
+                }
+            }
+
+            transaction?.Execute();
+            batch?.Execute();
+
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+
         }
 
         /// <summary>
