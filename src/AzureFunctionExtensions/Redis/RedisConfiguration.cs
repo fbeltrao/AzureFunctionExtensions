@@ -37,6 +37,11 @@ namespace Fbeltrao.AzureFunctionExtensions
         /// </summary>
         public bool SendInBatch { get; set; } = true;
 
+        /// <summary>
+        /// Send items in contiguous transaction to Redis
+        /// </summary>
+        public bool SendInTransaction { get; set; } = true;
+
 
         /// <summary>
         /// Sets the operation to performed in Redis
@@ -48,6 +53,7 @@ namespace Fbeltrao.AzureFunctionExtensions
         /// Time to live in Redis
         /// </summary>
         public TimeSpan? TimeToLive { get; set; }
+        
 
         /// <summary>
         /// Initializes attributes, configuration and async collector

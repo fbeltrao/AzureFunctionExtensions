@@ -12,13 +12,18 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
     /// </summary>
     public class RedisOutputAsyncCollectorTest
     {
-        [Fact]
-        public async Task SetKeyValue_ConnectionInConfig_KeyInAttribute_OperationInAttribute_SetsValue()
+        [Theory]
+        [InlineData(false, false)]
+        [InlineData(true, false)]
+        [InlineData(true, true)]
+        public async Task SetKeyValue_ConnectionInConfig_KeyInAttribute_OperationInAttribute_SetsValue(bool sendInBatch, bool sendInTransaction)
         {
             var connectionManager = new Mock<IRedisDatabaseManager>();
             var config = new RedisConfiguration(connectionManager.Object)
             {
-                Connection = "localhost:3679",                
+                Connection = "localhost:3679",
+                SendInBatch = sendInBatch,
+                SendInTransaction = sendInTransaction
             };
 
             var attr = new RedisOutputAttribute()
@@ -47,13 +52,18 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
             Assert.Equal("test", (string)actual);
         }
 
-        [Fact]
-        public async Task IncrementValue_ConnectionInConfig_KeyInAttribute_OperationInAttribute_WithoutIncrementValue_IncrementsOne()
+        [Theory]
+        [InlineData(false, false)]
+        [InlineData(true, false)]
+        [InlineData(true, true)]
+        public async Task IncrementValue_ConnectionInConfig_KeyInAttribute_OperationInAttribute_WithoutIncrementValue_IncrementsOne(bool sendInBatch, bool sendInTransaction)
         {
             var connectionManager = new Mock<IRedisDatabaseManager>();
             var config = new RedisConfiguration(connectionManager.Object)
             {
                 Connection = "localhost:3679",
+                SendInBatch = sendInBatch,
+                SendInTransaction = sendInTransaction
             };
 
             var attr = new RedisOutputAttribute()
@@ -81,13 +91,18 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
             Assert.Equal(1, (long)actual);
         }
 
-        [Fact]
-        public async Task IncrementValue_ConnectionInConfig_KeyInAttribute_OperationInAttribute_By10_Increments10()
+        [Theory]
+        [InlineData(false,false)]
+        [InlineData(true, false)]
+        [InlineData(true, true)]
+        public async Task IncrementValue_ConnectionInConfig_KeyInAttribute_OperationInAttribute_By10_Increments10(bool sendInBatch, bool sendInTransaction)
         {
             var connectionManager = new Mock<IRedisDatabaseManager>();
             var config = new RedisConfiguration(connectionManager.Object)
             {
                 Connection = "localhost:3679",
+                SendInBatch = sendInBatch,
+                SendInTransaction = sendInTransaction
             };
 
             var attr = new RedisOutputAttribute()
@@ -107,23 +122,32 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
             {
                 IncrementValue = 10
             });
+            await target.AddAsync(new RedisOutput()
+            {
+                IncrementValue = 10
+            });
 
             await target.FlushAsync();
 
             connectionManager.VerifyAll();
 
             var actual = redisDatabase.StringGet("myKey");
-            Assert.Equal(10, (long)actual);
+            Assert.Equal(20, (long)actual);
         }
 
 
-        [Fact]
-        public async Task ListRightPush_ConnectionInConfig_KeyInAttribute_OperationInAttribute_AddsItemToEndOfList()
+        [Theory]
+        [InlineData(false, false)]
+        [InlineData(true, false)]
+        [InlineData(true, true)]
+        public async Task ListRightPush_ConnectionInConfig_KeyInAttribute_OperationInAttribute_AddsItemToEndOfList(bool sendInBatch, bool sendInTransaction)
         {
             var connectionManager = new Mock<IRedisDatabaseManager>();
             var config = new RedisConfiguration(connectionManager.Object)
             {
                 Connection = "localhost:3679",
+                SendInBatch = sendInBatch,
+                SendInTransaction = sendInTransaction
             };
 
             var attr = new RedisOutputAttribute()
@@ -159,13 +183,18 @@ namespace Fbeltrao.AzureFunctionExtensions.Test
             Assert.Equal("last value", actual[1].ToString());            
         }
 
-        [Fact]
-        public async Task ListLeftPush_ConnectionInConfig_KeyInAttribute_OperationInAttribute_AddsItemToStartOfList()
+        [Theory]
+        [InlineData(false, false)]
+        [InlineData(true, false)]
+        [InlineData(true, true)]
+        public async Task ListLeftPush_ConnectionInConfig_KeyInAttribute_OperationInAttribute_AddsItemToStartOfList(bool sendInBatch, bool sendInTransaction)
         {
             var connectionManager = new Mock<IRedisDatabaseManager>();
             var config = new RedisConfiguration(connectionManager.Object)
             {
                 Connection = "localhost:3679",
+                SendInBatch = sendInBatch,
+                SendInTransaction = sendInTransaction
             };
 
             var attr = new RedisOutputAttribute()
